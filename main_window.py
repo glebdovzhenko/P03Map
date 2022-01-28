@@ -1,13 +1,10 @@
-import pandas as pd
-from PyQt5.QtWidgets import QMainWindow, QMenu, QAction, QFileDialog, QErrorMessage, QDesktopWidget
+from PyQt5.QtWidgets import QMainWindow, QMenu, QAction, QFileDialog, QDesktopWidget
 
-import numpy as np
 import os
 
 from qapp import P03MapApplication
 from central_widget import P03MapCentralWidget
 from thread_workers import ImportThread
-from utils import read_fio
 
 
 class P03MapMainWindow(QMainWindow):
@@ -38,6 +35,9 @@ class P03MapMainWindow(QMainWindow):
         screen_size = QDesktopWidget().availableGeometry(self).size()
         self.resize(screen_size * 0.7)
         self.move(int(screen_size.width() * 0.15), int(screen_size.height() * 0.15))
+
+        # setting window title
+        self.setWindowTitle('P03Map')
 
     def on_act_open(self, checked):
         # launching FileDialog
