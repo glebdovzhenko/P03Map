@@ -179,7 +179,10 @@ class P03MapTab2(QWidget):
             self.upd_plot()
 
     def upd_plot(self):
-        self.plot.clear()
+        for item in self.plot.items:
+            item._setView(None)
+        self.plot.items = []
+        self.plot.update()
 
         g = gl.GLGridItem(size=QVector3D(100, 100, 1), color=(255, 255, 255, 76))
         self.plot.addItem(g)
