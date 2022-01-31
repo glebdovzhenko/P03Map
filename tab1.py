@@ -20,6 +20,7 @@ class P03MapTab1(QWidget):
         self.plot_region = pg.LinearRegionItem([0.1, 0.9], movable=True)
         self.gauss_estimate = pg.PlotCurveItem([], [], pen='#ff0000')
 
+        # layout
         layout = QGridLayout()
         layout.addWidget(self.plot, 1, 1, 1, 1)
         self.setLayout(layout)
