@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QPushButton, QGridLayout, QProgressBar, QLabel, QComboBox
-from PyQt5.QtGui import QVector3D
+from PyQt5.QtGui import QVector3D, QFont
 from PyQt5.QtCore import Qt
 from pyqtgraph import opengl as gl
 import numpy as np
@@ -15,11 +15,16 @@ class P03Map3DPlot(gl.GLViewWidget):
         self.qapp = P03MapApplication.instance()
 
         self.text_objs = [
-            [-50., -50., 0., "0"],
-            [50., -50., 0., "100 μm"],
-            [-50., 50., 0., "100 μm"],
-            [0., -50., 0., self.qapp.scan_mot_x],
-            [-50., 0., 0., self.qapp.scan_mot_y],
+            [-50., -50., 0., "0", QFont("Arial")],
+            [50.,  -50., 0., "100 μm", QFont("Arial")],
+            [-50.,  50., 0., "100 μm", QFont("Arial")],
+            [0.,   -50., 0., self.qapp.scan_mot_x, QFont("Arial")],
+            [-50.,   0., 0., self.qapp.scan_mot_y, QFont("Arial")],
+            [70,   -50., 0., "        ", QFont("Arial")],
+            [70,   -25., 0., "        ", QFont("Arial")],
+            [70,     0., 0., "        ", QFont("Arial")],
+            [70,    25., 0., "        ", QFont("Arial")],
+            [70,    50., 0., "        ", QFont("Arial")],
         ]
 
     def paintGL(self, *args, **kwds):
@@ -77,6 +82,7 @@ class P03MapTab2(QWidget):
         self.plot.setMinimumSize(640, 480)
         self.plot.setCameraPosition(distance=80)
         self.upd_plot()
+        self.on_clicked_btn_view1()
 
         # layout
         layout = QGridLayout()
@@ -169,6 +175,8 @@ class P03MapTab2(QWidget):
         for item in self.plot.items:
             item._setView(None)
         self.plot.items = []
+        for ii in range(5, 10):
+            self.plot.text_objs[ii][3] = " " * 8
         self.plot.update()
 
         g = gl.GLGridItem(size=QVector3D(100, 100, 1), color=(255, 255, 255, 76))
@@ -202,6 +210,23 @@ class P03MapTab2(QWidget):
             zdata = np.sqrt(zdata)
         else:
             return
+
+        zmin, zmax = zdata[~np.isnan(zdata)].min(), zdata[~np.isnan(zdata)].max()
+
+        if self.cmb_scale.currentText() == 'Linear':
+            zticks = np.linspace(zmin, zmax, 5)
+        elif self.cmb_scale.currentText() == 'Log':
+            zticks = np.exp(np.linspace(zmin, zmax, 5))
+        elif self.cmb_scale.currentText() == 'Root':
+            zticks = np.linspace(zmin, zmax, 5) ** 2
+        else:
+            return
+
+        for ii, zval in zip(range(5, 10), zticks):
+            zval = "%.01f" % zval
+            zval += " " * (8 - len(zval))
+            self.plot.text_objs[ii][3] = zval
+        self.plot.update()
 
         zdata = 75. * (zdata - zdata.min()) / (zdata.max() - zdata.min())
 
