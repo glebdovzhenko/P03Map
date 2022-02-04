@@ -52,7 +52,7 @@ You can make changes to the plot using the combo boxes:
 1. `Data`: choose peak `Height`, `Width`, or `Center` to be plotted.
 2. `Scale`: choose `z` axis scale: `Linear`, `Log`, or `Root`.
 3. `Plot`: choose between a coloured 3D plot (`Landscape`) or a heat map (`Flat`).
-4. `Interpolation`: represent data as actual datapoints (`Points`), or choose an interpolation (`Nearest` / `Linear` / `Cubic`).
+4. `Interpolation`: represent data as actual datapoints (`Points`), or choose a surface interpolation (`Nearest` / `Linear` / `Cubic`).
 5. `Colormap`: choose the colormap.
 
 To manipulate the 3D plot use the mouse wheel to zoom in / out and left button drag to rotate the scene. 
