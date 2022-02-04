@@ -39,6 +39,8 @@ This estimate will be used as a starting point for refinement.
 Go to the `Map` tab.
 
 If you press `Refine`, the refinement of all imported data will start. 
+Each spectrum is refined with a Gaussian (peak) + linear (background) functions.
+
 The progress is shown on the progress bar below.
 You can use the `Stop` button to stop the refinement if it is taking too long and go back to the `Mean spectra` tab to improve the estimate or select another peak.
 The text below the progress bar shows how many refinements were successful. 
