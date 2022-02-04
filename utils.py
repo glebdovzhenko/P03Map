@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 from scipy.optimize import curve_fit
+from typing import Union, Dict
 
 
 def read_fio(f_name):
@@ -121,3 +122,79 @@ def refine_estimate(xdata, ydata, est_poly, est_gauss):
     est_poly_ = popt[3:]
 
     return est_poly_, est_gauss_
+
+
+def en_wl(en: Union[float, np.ndarray, None] = None,
+          wl: Union[float, np.ndarray, None] = None
+          ) -> Dict[str, Union[float, np.ndarray]]:
+    """
+    Converts between photon energy in keV and wavelength in AA
+    :param en: [keV]
+    :param wl: [AA]
+    :return: dictionary with keys 'en', 'wl'.
+    """
+    if en is not None and wl is None:
+        return {'en': en, 'wl': 12.39842 / en}
+    elif wl is not None and en is None:
+        return {'wl': wl, 'en': 12.39842 / wl}
+    else:
+        raise ValueError('Input kwargs are wl or en.')
+
+
+def bragg(en: Union[float, np.ndarray, None] = None,
+          wl: Union[float, np.ndarray, None] = None,
+          k: Union[float, np.ndarray, None] = None,
+          tth: Union[float, np.ndarray, None] = None,
+          d: Union[float, np.ndarray, None] = None,
+          q: Union[float, np.ndarray, None] = None
+          ) -> Dict[str, Union[float, np.ndarray]]:
+    """
+    :param q: inverse lattice parameter [AA^-1]
+    :param d: lattice parameter [AA]
+    :param tth: 2Theta Bragg angle [deg]
+    :param k: photon scattering vector [AA^-1]
+    :param wl: photon wavelength [AA]
+    :param en: photon energy [keV]
+    :return:
+    """
+    if sum(x is not None for x in [en, wl, k, tth, d, q]) != 2:
+        raise ValueError('Too many parameters specified')
+    elif sum(x is not None for x in [en, wl, k]) > 1:
+        raise ValueError('Too many photon parameters specified')
+    elif sum(x is not None for x in [d, q]) > 1:
+        raise ValueError('Too many lattice parameters specified')
+
+    if sum(x is not None for x in [en, wl, k]) == 1:
+        if k is None:
+            tmp = en_wl(en=en, wl=wl)
+            en = tmp['en']
+            wl = tmp['wl']
+            k = 2. * np.pi / wl
+        else:
+            wl = 2. * np.pi / k
+            en = en_wl(wl=wl)['en']
+    else:
+        if q is not None:
+            d = 2. * np.pi / q
+        else:
+            q = 2. * np.pi / d
+
+        wl = 2. * d * np.sin(np.pi * tth / 360.)
+        en = en_wl(wl=wl)['en']
+        k = 2. * np.pi / wl
+
+        return {'en': en, 'wl': wl, 'k': k, 'tth': tth, 'd': d, 'q': q}
+
+    if sum(x is not None for x in [d, q]) == 1:
+        if q is not None:
+            d = 2. * np.pi / q
+        else:
+            q = 2. * np.pi / d
+    else:
+        d = wl / (2. * np.sin(np.pi * tth / 360.))
+        q = 2. * np.pi / d
+
+        return {'en': en, 'wl': wl, 'k': k, 'tth': tth, 'd': d, 'q': q}
+
+    tth = 360. * np.arcsin(wl / (2. * d)) / np.pi
+    return {'en': en, 'wl': wl, 'k': k, 'tth': tth, 'd': d, 'q': q}

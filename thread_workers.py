@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from qapp import P03MapApplication
-from utils import refine_estimate, read_fio
+from utils import refine_estimate, read_fio, bragg
 
 
 class ThreadWorker(QThread):
@@ -43,7 +43,7 @@ class RefinementThread(ThreadWorker):
                 self.status.emit(self.length - 1)
                 return
 
-            xdata = self.qapp.data.at[ii, 'spectra_q']
+            xdata = bragg(q=self.qapp.data.at[ii, 'spectra_q'], en=8.04)['tth']
             ydata = self.qapp.data.at[ii, 'spectra_I']
             est_poly = self.qapp.poly_estimate_params
             est_gauss = self.qapp.gauss_estimate_params

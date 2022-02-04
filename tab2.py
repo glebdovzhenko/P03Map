@@ -15,16 +15,16 @@ class P03Map3DPlot(gl.GLViewWidget):
         self.qapp = P03MapApplication.instance()
 
         self.text_objs = [
-            [-50., -50., 0., "0", QFont("Arial")],
-            [50.,  -50., 0., "100 μm", QFont("Arial")],
-            [-50.,  50., 0., "100 μm", QFont("Arial")],
-            [0.,   -50., 0., self.qapp.scan_mot_x, QFont("Arial")],
-            [-50.,   0., 0., self.qapp.scan_mot_y, QFont("Arial")],
-            [70,   -50., 0., "        ", QFont("Arial")],
-            [70,   -25., 0., "        ", QFont("Arial")],
-            [70,     0., 0., "        ", QFont("Arial")],
-            [70,    25., 0., "        ", QFont("Arial")],
-            [70,    50., 0., "        ", QFont("Arial")],
+            [-50., -50., 0., "0",                  QFont("Arial", 15)],
+            [50.,  -50., 0., "100 μm",             QFont("Arial", 15)],
+            [-50.,  50., 0., "100 μm",             QFont("Arial", 15)],
+            [0.,   -50., 0., self.qapp.scan_mot_x, QFont("Arial", 15)],
+            [-50.,   0., 0., self.qapp.scan_mot_y, QFont("Arial", 15)],
+            [80,   -50., 0., "        ",           QFont("Arial", 15)],
+            [80,   -25., 0., "        ",           QFont("Arial", 15)],
+            [80,     0., 0., "        ",           QFont("Arial", 15)],
+            [80,    25., 0., "        ",           QFont("Arial", 15)],
+            [80,    50., 0., "        ",           QFont("Arial", 15)],
         ]
 
     def paintGL(self, *args, **kwds):
@@ -273,3 +273,15 @@ class P03MapTab2(QWidget):
             )
         else:
             return
+
+        cbar_xx = np.linspace(70., 80., 10)
+        cbar_yy = np.linspace(-50., 50., 100)
+
+        cbar_zz = np.zeros(shape=(10, 100))
+        cbar_cc = np.array([np.linspace(0., 1., 100)] * 10)
+
+        self.plot.addItem(
+            gl.GLSurfacePlotItem(x=cbar_xx, y=cbar_yy, z=cbar_zz,
+                                 colors=self.qapp.apply_cmap(cbar_cc, cmap=self.cmb_cmap.currentText()),
+                                 shader=None, computeNormals=False)
+        )

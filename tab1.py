@@ -3,7 +3,7 @@ import pyqtgraph as pg
 import numpy as np
 
 from qapp import P03MapApplication
-from utils import roonizi_estimate
+from utils import roonizi_estimate, bragg
 
 
 class P03MapTab1(QWidget):
@@ -14,7 +14,7 @@ class P03MapTab1(QWidget):
         # plot
         self.plot = pg.GraphicsLayoutWidget(parent=self)
         self.axes = self.plot.addPlot(title="Mean spectra")
-        self.axes.setLabel('bottom', "Q", units="1/Å")
+        self.axes.setLabel('bottom', "CuKα 2Θ", units="deg")
         self.axes.setLabel('left', "I", units="counts")
         self.axes.showGrid(x=True, y=True)
         self.plot_region = pg.LinearRegionItem([0.1, 0.9], movable=True)
@@ -31,7 +31,7 @@ class P03MapTab1(QWidget):
 
     def on_update_plot(self):
         self.axes.clear()
-        self.axes.plot(self.qapp.mean_q, self.qapp.mean_I)
+        self.axes.plot(bragg(q=self.qapp.mean_q, en=8.04)['tth'], self.qapp.mean_I)
 
         xmin, xmax = self.axes.viewRange()[0]
 
@@ -42,7 +42,7 @@ class P03MapTab1(QWidget):
 
     def on_update_region(self, regionItem):
         lo, hi = regionItem.getRegion()
-        xdata, ydata = self.qapp.mean_q, self.qapp.mean_I
+        xdata, ydata = bragg(q=self.qapp.mean_q, en=8.04)['tth'], self.qapp.mean_I
         xdata, ydata = xdata[(lo < xdata) & (xdata < hi)], ydata[(lo < xdata) & (xdata < hi)]
 
         xdata_ = np.linspace(np.min(xdata), np.max(xdata), 5000)
